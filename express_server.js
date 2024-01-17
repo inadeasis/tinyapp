@@ -58,4 +58,12 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${id}`)
 });
 
+app.post("/urls/:id/delete", (req, res) => {
+  const shortURL = req.params.id;
+
+  console.log(req.body); 
+  delete urlDatabase[shortURL];
+  res.redirect(`/urls`)
+})
+
 
