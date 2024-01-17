@@ -44,6 +44,7 @@ app.use(express.urlencoded({ extended: true }));
 // Generate Random String for Short URL
 const generateRandomString = () => {
   let randomString = (Math.random() + 1).toString(36).substring(6);
+  return randomString;
 }
 
 app.post("/urls", (req, res) => {
