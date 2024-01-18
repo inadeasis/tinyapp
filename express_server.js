@@ -58,6 +58,7 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${id}`)
 });
 
+// Add POST route for /urls/:id/delete to remove URLs
 app.post("/urls/:id/delete", (req, res) => {
   const shortURL = req.params.id;
 
