@@ -16,10 +16,13 @@
       <div class="navbar-nav">
         <a class="nav-item nav-link" href="/urls">My URLs</a>
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
-        <form method="POST" name="username" action="/urls/login">
+        <!-- <form method="POST" name="username" action="/urls/login">
           <a class="nav-item nav-link" href="/urls/login">
-            <button>Login</button></a
-          >
+            <button>Login</button></a? -->
+          <form method="POST" action="/login">
+  <input type="text" name="username" placeholder="Username">
+  <input type="submit" value="Login">
+</form>
         </form>
       </div>
     </div>
