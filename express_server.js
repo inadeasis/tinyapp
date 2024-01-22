@@ -53,6 +53,10 @@ app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
+app.get('/register', (req, res) => {
+  res.render('register');
+});
+
 app.use(express.urlencoded({ extended: true }));
 
 // Generate Random String for Short URL
