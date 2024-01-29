@@ -55,15 +55,15 @@ app.get("/hello", (req, res) => {
 
 app.get('/register', (req, res) => {
   const templateVars = {
-    user: users[req.session.id]
-  };
+  urls: urlDatabase,
+  username: req.cookies["username"], };
   res.render("register", templateVars);
 });
 
 app.get('/login', (req, res) => {
-  const templateVars = {
-    user: users[req.session.id]
-  };
+    const templateVars = {
+  urls: urlDatabase,
+  username: req.cookies["username"], };
   res.render("login", templateVars);
 });
 
