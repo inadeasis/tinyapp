@@ -146,7 +146,7 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  req.session = user_id;
+  req.session = null;
   res.redirect("/login");
 });
 
@@ -160,6 +160,7 @@ app.post("/register", (req, res) => {
   const password = req.body.password;
   const hashed = bcrypt.hashSync(password, 10); 
 
+
   if (!email || !password) {
     res.status(400).send('Please enter required fields');
     return;
@@ -171,7 +172,7 @@ app.post("/register", (req, res) => {
       return;
     }
   }
-    req.session.user_id = id;
+    req.session.user_id = userId;
     res.redirect(`/urls/${id}`)
 });
 
@@ -184,7 +185,7 @@ app.listen(PORT, () => {
     userRandomID: {
       id: "userRandomID",
       email: "user@example.com",
-      password: "purple-monkey-dinosaur",
+      password: "dishwasher-funk"
     },
     user2RandomID: {
       id: "user2RandomID",
