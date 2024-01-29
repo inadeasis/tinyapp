@@ -12,7 +12,6 @@ app.set("view engine", "ejs")
 app.use(cookieSession({
   name: 'session',
   keys: ['key'],
-
   maxAge: 24 * 60 * 60 * 1000 // expiration: 24h
 }));
 
@@ -35,9 +34,6 @@ const urlDatabase = {
       password: "dishwasher-funk",
     },
   };
-
-
-
 
 app.get("/", (req, res) => {
   const userId = req.session.userId;
