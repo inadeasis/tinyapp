@@ -21,28 +21,37 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  
-  const templateVars = { 
-  urls: urlDatabase,
-  username: req.cookies["username"], };
+  const userId = req.session.user_id;
+  let user = null;
+  if (userId) {
+    urls = urlsForUser(userId);
+    user = users[userId];
+  }
+  const templateVars = {
+    urls,
+    user
+  };
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  const templateVars = { 
-  urls: urlDatabase,
-  username: req.cookies["username"], };
+  if (!req.session.user_id) {
+    res.redirect("/login");
+  } else {
+    const templateVars = {
+      user: users[req.session.user_id]
+    };
   res.render("urls_new", templateVars);
-});
+}});
 
 app.get("/urls/:id", (req, res) => {
-   const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id],  urls: urlDatabase,
-  username: req.cookies["username"],  };
-   res.render("urls_show", templateVars);
-});
-
-app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
+  const shortURL = req.params.id;
+  const url = urlDatabase[shortURL];
+  if (url) {
+    res.render("urls_show", { shortURL, longURL: url.longURL });
+  } else {
+    res.status(404).send("URL not found");
+  }
 });
 
 app.get("/urls.json", (req, res) => {
@@ -55,19 +64,17 @@ app.get("/hello", (req, res) => {
 
 app.get('/register', (req, res) => {
   const templateVars = {
-  urls: urlDatabase,
-  username: req.cookies["username"], };
+    user: users[req.session.user_id]
+  };
   res.render("register", templateVars);
 });
 
 app.get('/login', (req, res) => {
-    const templateVars = {
-  urls: urlDatabase,
-  username: req.cookies["username"], };
+  const templateVars = {
+    user: users[req.session.user_id]
+  };
   res.render("login", templateVars);
 });
-
-app.use(express.urlencoded({ extended: true }));
 
 // Generate Random String for Short URL
 const generateRandomString = () => {
@@ -105,18 +112,21 @@ app.post("/urls/:id/", (req, res) => {
 })
 
 app.post("/login", (req, res) => {
-  // Set the username cookie using the value from the form
-  res.cookie('username', req.body.username);
-
-  // Redirect the user to the /urls page after setting the cookie
-  res.redirect(`/urls`);
+  const email = req.body.email;
+  const password = req.body.password;
+  const user = getUserByEmail(email, users);
+  
+  if (user && bcrypt.compareSync(password, user.password)) {
+    req.session.user_id = user.id;
+    res.redirect("/urls");
+  } else {
+    res.status(403).send("Email or password is incorrect");
+  }
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie('username', req.body.username);
-
-  // Redirect the user to the /urls page after setting the cookie
-  res.redirect(`/urls`);
+  req.session = null;
+  res.redirect("/urls");
 });
 
 // endpoint that handles the registration form data
@@ -141,6 +151,10 @@ app.post("/register", (req, res) => {
   }
     req.session.user_id = id;
     res.redirect(`/urls/${id}`)
+});
+
+app.listen(PORT, () => {
+  console.log(`Example app listening on port ${PORT}!`);
 });
 
 // Users Object
