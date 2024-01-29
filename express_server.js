@@ -21,11 +21,11 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const userId = req.session.user_id;
+  const userId = req.session.user_id
   let user = null;
   if (userId) {
     urls = urlsForUser(userId);
-    user = users[userId];
+    user = user[userId];
   }
   const templateVars = {
     urls,
@@ -39,7 +39,7 @@ app.get("/urls/new", (req, res) => {
     res.redirect("/login");
   } else {
     const templateVars = {
-      user: users[req.session.user_id]
+      user: user[req.session.user_id]
     };
   res.render("urls_new", templateVars);
 }});
@@ -64,15 +64,18 @@ app.get("/hello", (req, res) => {
 
 app.get('/register', (req, res) => {
   const templateVars = {
-    user: users[req.session.user_id]
+    user: user[req.session.user_id]
   };
+  res.cookie('user_id', user.id);
   res.render("register", templateVars);
 });
 
 app.get('/login', (req, res) => {
+  
   const templateVars = {
-    user: users[req.session.user_id]
+    user: user[req.session.user_id]
   };
+  res.cookie('user_id', user.id);
   res.render("login", templateVars);
 });
 
@@ -126,7 +129,7 @@ app.post("/login", (req, res) => {
 
 app.post("/logout", (req, res) => {
   req.session = null;
-  res.redirect("/urls");
+  res.redirect("/login");
 });
 
 // endpoint that handles the registration form data
@@ -143,8 +146,8 @@ app.post("/register", (req, res) => {
     return;
   }
 
-  for (let id in users) {
-    if (users[id].email === email) {
+  for (let id in user) {
+    if (user[id].email === email) {
       res.status(400).send('Email already in use');
       return;
     }
@@ -158,7 +161,7 @@ app.listen(PORT, () => {
 });
 
 // Users Object
-  const users = {
+  const user = {
     userRandomID: {
       id: "userRandomID",
       email: "user@example.com",
