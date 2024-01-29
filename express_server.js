@@ -70,11 +70,11 @@ app.get("/urls", (req, res) => {
     urls: urlsForUser(userId),
     user: user,
   };
-    if (!user ) {
+  if (!user ) {
     return res
       .status(403)
       .send(
-        "<html><head> <title>Error</title> </head><body> <h1>Error</h1> <p>Only Logged In Users Can Shorten URL.</p> </body></html>"
+        "<html><head> <title>Error</title> </head><body> <h1>Error</h1> <p>Login to view URLs</p> </body></html>"
       );
   }
   res.render("urls_index", templateVars);
@@ -94,6 +94,15 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   const shortURL = req.params.id;
   const url = urlDatabase[shortURL];
+  const user = users[userId];
+
+  if (!user ) {
+    return res
+      .status(403)
+      .send(
+        "<html><head> <title>Error</title> </head><body> <h1>Error</h1> <p>Login to View URLs.</p> </body></html>"
+      );
+  }
   if (url) {
     res.render("urls_show", { shortURL, longURL: url.longURL });
   } else {
@@ -149,6 +158,27 @@ app.post("/urls/:id/delete", (req, res) => {
   const userId = req.session.user_id;
   const shortURL = req.params.id;
   
+  if (!shortURL) {
+    res.status(404).send(
+      "<html><head> <title>Error</title> </head> <body> <h1>Error</h1> <p>URL Does Not Exist</p> </body></html>"
+    );
+  }
+ 
+  // if not logged in
+  if (!req.session.userId) {
+    return res.status(403).send("Please login to delete URLs.");
+  }
+
+  // if URL in db
+  if (!urlDatabase[shortURL]) {
+    return res.status(404).send("URL not found");
+  }
+
+  // if user owns url
+  if (urlDatabase[shortURL].userID !== req.session.userId) {
+    return res.status(403).send("You are not the owner of this URL.");
+  }
+
   console.log(req.body); 
   delete urlDatabase[shortURL];
   res.redirect(`/urls`)
@@ -156,10 +186,10 @@ app.post("/urls/:id/delete", (req, res) => {
 
 app.post("/urls/:id/", (req, res) => {
   const shortURL = req.params.id;
-  const longURL = req.body.longURL
+  const user = users[userId];
   const userId = req.session.user_id;
 
-   if (!userId) {
+   if (!user) {
     res.send("Login Required");
     return;
   }
