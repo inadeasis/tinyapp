@@ -12,7 +12,7 @@ app.use(cookieSession({
   name: 'session',
   keys: ['key'],
 
-  maxAge: 24 * 60 * 60 * 1000 // Expiration: 24 hours
+  maxAge: 24 * 60 * 60 * 1000 // expiration: 24h
 }));
 
 // db links
@@ -35,8 +35,7 @@ const urlDatabase = {
     },
   };
 
-
-  const getUserByEmail = function(email, database) {
+const getUserByEmail = function(email, database) {
   for (let user in database) {
     if (database[user].email === email) {
       return database[user];
@@ -44,12 +43,11 @@ const urlDatabase = {
   }
 };
 
-
 const urlsForUser = (id) => {
   let urls = {};
-  for (let url in urlDatabase) {
-    if (urlDatabase[url].userId === id) {
-      urls[url] = urlDatabase[url];
+  for (let shortURL in urlDatabase) {
+    if (urlDatabase[shortURL].userId === id) {
+      urls[shortURL] = urlDatabase[shortURL];
     }
   }
   return urls;
@@ -124,11 +122,10 @@ app.get('/login', (req, res) => {
   const templateVars = {
     user: users[req.session.userId]
   };
-  // res.cookie('user_id', user.id);
   res.render("login", templateVars);
 });
 
-// Generate Random String for Short URL
+// generate Random String for Short URL
 const generateRandomString = () => {
   let randomString = (Math.random() + 1).toString(36).substring(6);
   return randomString;
@@ -202,10 +199,15 @@ app.post("/register", (req, res) => {
   const password = req.body.password;
   const hashed = bcrypt.hashSync(password, 10); 
 
-  if (!email || !password) {
+  if (!email) {
     res.status(400).send('Please enter required fields');
     return;
   }
+  if (!password) {
+    res.status(400).send('Please enter required fields');
+    return;
+  }
+
   for (let id in users) {
     if (users[id].email === email) {
       res.status(400).send('Email already in use');
