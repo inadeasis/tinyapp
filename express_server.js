@@ -108,3 +108,28 @@ app.post("/logout", (req, res) => {
   // Redirect the user to the /urls page after setting the cookie
   res.redirect(`/urls`);
 });
+
+// endpoint that handles the registration form data
+app.post("/register", (req, res) => {
+  console.log(req.body); // Log the POST request body to the console
+  
+  const id = generateRandomString()
+  req.session.user_id = id;
+
+  res.redirect(`/urls/$`)
+});
+
+// Users Object
+const users = {
+  userRandomID: {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur",
+  },
+  user2RandomID: {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk",
+  },
+
+};
