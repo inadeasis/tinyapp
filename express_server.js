@@ -72,13 +72,13 @@ app.get("/urls", (req, res) => {
     urls: urlsForUser,
     user: user,
   };
-  //   if (!user ) {
-  //   return res
-  //     .status(403)
-  //     .send(
-  //       "<html><head> <title>Error</title> </head><body> <h1>Error</h1> <p>Please login or register first.</p> </body></html>"
-  //     );
-  // }
+    if (!user ) {
+    return res
+      .status(403)
+      .send(
+        "<html><head> <title>Error</title> </head><body> <h1>Error</h1> <p>Only Logged In Users Can Shorten URL.</p> </body></html>"
+      );
+  }
   res.render("urls_index", templateVars);
 
 });
