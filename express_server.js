@@ -54,7 +54,17 @@ app.get("/hello", (req, res) => {
 });
 
 app.get('/register', (req, res) => {
-  res.render('register');
+  const templateVars = {
+    user: users[req.session.id]
+  };
+  res.render("register", templateVars);
+});
+
+app.get('/login', (req, res) => {
+  const templateVars = {
+    user: users[req.session.id]
+  };
+  res.render("login", templateVars);
 });
 
 app.use(express.urlencoded({ extended: true }));
@@ -130,7 +140,7 @@ app.post("/register", (req, res) => {
     }
   }
     req.session.user_id = id;
-    res.redirect(`/urls/$`)
+    res.redirect(`/urls/${id}`)
 });
 
 // Users Object
