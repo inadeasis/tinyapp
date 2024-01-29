@@ -2,7 +2,6 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
@@ -15,11 +14,14 @@
       integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
       crossorigin="anonymous"
     />
-
     <title>Register</title>
   </head>
+
   <body>
     <%- include('./partials/_header') %>
+
+    <main style="margin: 1em"></main>
+
     <h2>Create Account</h2>
     <form action="/register" method="POST">
       <label for="email">Email:</label>
@@ -31,10 +33,12 @@
         placeholder="Password"
         id="passsword"
       />
+
       <div style="padding-top: 20px">
         <button type="submit" class="btn btn-primary">Register</button>
       </div>
     </form>
+
     <!-- Bootstrap JS -->
     <script
       src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
