@@ -116,16 +116,18 @@ app.post("/register", (req, res) => {
   const id = generateRandomString()
   // Check if the e-mail or password are empty strings, email is already in use
   for (let id in users) {
-     if (users[id].email === "") {
-      res.status(400).send('Please enter email');
-      return;
-    }
     if (users[id].email === email) {
       res.status(400).send('Email already in use');
       return;
     }
+     if (users[id].email === "" && users[id].password === "") {
+      res.status(400).send('Please enter required fields');
+      return;
+    }
   }
-
+    req.session.user_id = id;
+    res.redirect(`/urls/$`)
+});
 
 // Users Object
   const users = {
@@ -140,7 +142,3 @@ app.post("/register", (req, res) => {
       password: "dishwasher-funk",
     },
   };
-    req.session.user_id = id;
-    res.redirect(`/urls/$`)
-});
-
