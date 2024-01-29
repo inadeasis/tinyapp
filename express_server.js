@@ -114,12 +114,7 @@ app.post("/register", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
   
   const id = generateRandomString()
-  req.session.user_id = id;
-
-  res.redirect(`/urls/$`)
-});
-
-// Users Object
+  // Users Object
 const users = {
   userRandomID: {
     id: "userRandomID",
@@ -133,3 +128,8 @@ const users = {
   },
 
 };
+  req.session.user_id = id;
+
+  res.redirect(`/urls/$`)
+});
+
