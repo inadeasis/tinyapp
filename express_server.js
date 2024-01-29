@@ -1,5 +1,6 @@
 const express = require("express");
 const cookieParser = require('cookie-parser')
+const bcrypt = require('bcryptjs');
 const app = express();
 const PORT = 8080; // default port 8080
 
@@ -17,15 +18,16 @@ const urlDatabase = {
 };
 
 app.get("/", (req, res) => {
-  res.send("Hello!");
+   res.redirect("/urls");
 });
 
 app.get("/urls", (req, res) => {
-  const userId = req.session.user_id
+  const userId = req.session.user_id;
+  let urls = {};
   let user = null;
-  if (userId) {
-    urls = urlsForUser(userId);
-    user = user[userId];
+  if (userId ) {
+    urls = urlsForUser(userId );
+    user = user[userId ];
   }
   const templateVars = {
     urls,
@@ -64,18 +66,18 @@ app.get("/hello", (req, res) => {
 
 app.get('/register', (req, res) => {
   const templateVars = {
-    user: user[req.session.user_id]
+    user: users[req.session.user_id]
   };
-  res.cookie('user_id', user.id);
+  // res.cookie('user_id', user.id);
   res.render("register", templateVars);
 });
 
 app.get('/login', (req, res) => {
   
   const templateVars = {
-    user: user[req.session.user_id]
+    user: users[req.session.user_id]
   };
-  res.cookie('user_id', user.id);
+  // res.cookie('user_id', user.id);
   res.render("login", templateVars);
 });
 
@@ -90,15 +92,22 @@ app.post("/urls", (req, res) => {
   
   const id = generateRandomString()
   const longURL = req.body.longURL;
+  urlDatabase[id] = req.body.longURL;
 
-  urlDatabase[id] = req.body.longURL
+  user[id] = {
+    id: id,
+    email: email,
+    password: hashed
+  };
 
   res.redirect(`/urls/${id}`)
 });
 
 // Add POST route for /urls/:id/delete to remove URLs
 app.post("/urls/:id/delete", (req, res) => {
+
   const shortURL = req.params.id;
+  
 
   console.log(req.body); 
   delete urlDatabase[shortURL];
@@ -108,11 +117,20 @@ app.post("/urls/:id/delete", (req, res) => {
 app.post("/urls/:id/", (req, res) => {
   const shortURL = req.params.id;
   const longURL = req.params.longURL;
+  const userId = req.session.user_id;
 
-  console.log(req.body); 
-  urlDatabase[shortURL] = req.body.longURL;
-  res.redirect(`/urls`)
-})
+   if (!userId) {
+    res.send("Please login first.");
+    return;
+  }
+  if (urlDatabase[shortURL].userID !== userId) {
+    res.send("This URL does not belong to you.");
+    return;
+  }
+  urlDatabase[shortURL].longURL = req.body.longURL;
+  res.redirect("/urls");
+});
+
 
 app.post("/login", (req, res) => {
   const email = req.body.email;
@@ -128,7 +146,7 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  req.session = null;
+  req.session = user_id;
   res.redirect("/login");
 });
 
@@ -140,6 +158,7 @@ app.post("/register", (req, res) => {
   // Check if the e-mail or password are empty strings, email is already in use
   const email = req.body.email;
   const password = req.body.password;
+  const hashed = bcrypt.hashSync(password, 10); 
 
   if (!email || !password) {
     res.status(400).send('Please enter required fields');
