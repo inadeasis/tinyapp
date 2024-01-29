@@ -141,7 +141,6 @@ const generateRandomString = () => {
 }
 
 app.post("/urls", (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
   const userId = req.session.userId;
   if (!userId) {
     res.send("Login Required");
@@ -179,15 +178,14 @@ app.post("/urls/:id/delete", (req, res) => {
     return res.status(403).send("You are not the owner of this URL.");
   }
 
-  console.log(req.body); 
   delete urlDatabase[shortURL];
   res.redirect(`/urls`)
 })
 
 app.post("/urls/:id/", (req, res) => {
-  const shortURL = req.params.id;
-  const user = users[userId];
+  const shortURL = req.params.id; 
   const userId = req.session.userId;
+  const user = users[userId];
 
    if (!user) {
     res.send("Login Required");
@@ -221,8 +219,6 @@ app.post("/logout", (req, res) => {
 
 // endpoint that handles the registration form data
 app.post("/register", (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
-  
   const id = generateRandomString()
 
   // Check if the e-mail or password are empty strings, email is already in use
