@@ -27,7 +27,7 @@ app.get("/urls", (req, res) => {
   let user = null;
   if (userId ) {
     urls = urlsForUser(userId );
-    user = user[userId ];
+    user = users[userId ];
   }
   const templateVars = {
     urls,
@@ -41,7 +41,7 @@ app.get("/urls/new", (req, res) => {
     res.redirect("/login");
   } else {
     const templateVars = {
-      user: user[req.session.user_id]
+      user: users[req.session.user_id]
     };
   res.render("urls_new", templateVars);
 }});
@@ -89,17 +89,14 @@ const generateRandomString = () => {
 
 app.post("/urls", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
-  
+  const userId = req.session.user_id;
+  if (!userId) {
+    res.send("Please login first.");
+    return;
+  }
+
   const id = generateRandomString()
-  const longURL = req.body.longURL;
   urlDatabase[id] = req.body.longURL;
-
-  user[id] = {
-    id: id,
-    email: email,
-    password: hashed
-  };
-
   res.redirect(`/urls/${id}`)
 });
 
@@ -172,7 +169,7 @@ app.post("/register", (req, res) => {
       return;
     }
   }
-    req.session.user_id = userId;
+    req.session.user_id = id;
     res.redirect(`/urls/${id}`)
 });
 
