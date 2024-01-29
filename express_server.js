@@ -114,22 +114,33 @@ app.post("/register", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
   
   const id = generateRandomString()
-  // Users Object
-const users = {
-  userRandomID: {
-    id: "userRandomID",
-    email: "user@example.com",
-    password: "purple-monkey-dinosaur",
-  },
-  user2RandomID: {
-    id: "user2RandomID",
-    email: "user2@example.com",
-    password: "dishwasher-funk",
-  },
+  // Check if the e-mail or password are empty strings, email is already in use
+  for (let id in users) {
+     if (users[id].email === "") {
+      res.status(400).send('Please enter email');
+      return;
+    }
+    if (users[id].email === email) {
+      res.status(400).send('Email already in use');
+      return;
+    }
+  }
 
-};
-  req.session.user_id = id;
 
-  res.redirect(`/urls/$`)
+// Users Object
+  const users = {
+    userRandomID: {
+      id: "userRandomID",
+      email: "user@example.com",
+      password: "purple-monkey-dinosaur",
+    },
+    user2RandomID: {
+      id: "user2RandomID",
+      email: "user2@example.com",
+      password: "dishwasher-funk",
+    },
+  };
+    req.session.user_id = id;
+    res.redirect(`/urls/$`)
 });
 
