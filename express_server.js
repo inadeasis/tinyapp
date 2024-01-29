@@ -4,12 +4,9 @@ const bcrypt = require('bcryptjs');
 const app = express();
 const PORT = 8080; // default port 8080
 
-app.use(express.json())
-
-app.use(express.urlencoded({ extended: true }));
-
 app.use(cookieParser())
-
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }));
 app.set("view engine", "ejs")
 
 const urlDatabase = {
@@ -22,17 +19,18 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const userId = req.session.user_id;
-  let urls = {};
-  let user = null;
-  if (userId ) {
-    urls = urlsForUser(userId );
-    user = users[userId ];
-  }
-  const templateVars = {
-    urls,
-    user
-  };
+  // const userId = req.session.user_id;
+  // let urls = {};
+  // let user = null;
+  // if (userId ) {
+  //   urls = {};
+  //   user = users[userId ];
+  // }
+  // const templateVars = {
+  //   urls,
+  //   user
+  // };
+  const templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
 
@@ -96,13 +94,13 @@ app.post("/urls", (req, res) => {
   }
 
   const id = generateRandomString()
-  urlDatabase[id] = req.body.longURL;
+  urlDatabase[id] = { longURL: req.body.longURL, userID: userId };
   res.redirect(`/urls/${id}`)
 });
 
 // Add POST route for /urls/:id/delete to remove URLs
 app.post("/urls/:id/delete", (req, res) => {
-
+  const userId = req.session.user_id;
   const shortURL = req.params.id;
   
 
@@ -157,6 +155,12 @@ app.post("/register", (req, res) => {
   const password = req.body.password;
   const hashed = bcrypt.hashSync(password, 10); 
 
+    users[id] = {
+    id: id,
+    email: email,
+    password: hashed
+  };
+
 
   if (!email || !password) {
     res.status(400).send('Please enter required fields');
@@ -178,7 +182,7 @@ app.listen(PORT, () => {
 });
 
 // Users Object
-  const user = {
+  const users = {
     userRandomID: {
       id: "userRandomID",
       email: "user@example.com",
