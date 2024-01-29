@@ -45,10 +45,10 @@ const urlDatabase = {
 };
 
 
-function urlsForUser(id) {
+const urlsForUser = (id) => {
   let urls = {};
   for (let url in urlDatabase) {
-    if (urlDatabase[url].userID === id) {
+    if (urlDatabase[url].userId === id) {
       urls[url] = urlDatabase[url];
     }
   }
@@ -69,7 +69,7 @@ app.get("/urls", (req, res) => {
   const user = users[userId];
 
   const templateVars = {
-    urls: urlsForUser,
+    urls: urlsForUser(userId),
     user: user,
   };
     if (!user ) {
@@ -144,7 +144,7 @@ app.post("/urls", (req, res) => {
 
   const id = generateRandomString()
   urlDatabase[id] = { longURL: req.body.longURL, userID: userId };
-  res.redirect(`/urls/${id}`)
+  res.redirect(`/urls/`)
 });
 
 // Add POST route for /urls/:id/delete to remove URLs
