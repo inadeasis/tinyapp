@@ -115,13 +115,17 @@ app.post("/register", (req, res) => {
   
   const id = generateRandomString()
   // Check if the e-mail or password are empty strings, email is already in use
+  const email = req.body.email;
+  const password = req.body.password;
+
+  if (!email || !password) {
+    res.status(400).send('Please enter required fields');
+    return;
+  }
+
   for (let id in users) {
     if (users[id].email === email) {
       res.status(400).send('Email already in use');
-      return;
-    }
-     if (users[id].email === "" && users[id].password === "") {
-      res.status(400).send('Please enter required fields');
       return;
     }
   }
