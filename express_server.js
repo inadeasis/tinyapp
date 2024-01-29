@@ -94,7 +94,7 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   const shortURL = req.params.id;
   const url = urlDatabase[shortURL];
-  const userId = req.session.user_id;
+  const userId = req.session.userId;
   const user = users[userId];
 
   if (!user ) {
@@ -123,7 +123,6 @@ app.get('/register', (req, res) => {
   const templateVars = {
     user: users[req.session.userId]
   };
-  // res.cookie('user_id', user.id);
   res.render("register", templateVars);
 });
 
@@ -143,7 +142,7 @@ const generateRandomString = () => {
 
 app.post("/urls", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
-  const userId = req.session.user_id;
+  const userId = req.session.userId;
   if (!userId) {
     res.send("Login Required");
     return;
@@ -208,7 +207,7 @@ app.post("/login", (req, res) => {
   const user = getUserByEmail(email, users);
   
   if (user && bcrypt.compareSync(password, user.password)) {
-    req.session.user_id = user.id;
+    req.session.userId = user.id;
     res.redirect("/urls");
   } else {
     res.status(403).send("Email or password is incorrect");
@@ -225,6 +224,7 @@ app.post("/register", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
   
   const id = generateRandomString()
+
   // Check if the e-mail or password are empty strings, email is already in use
   const email = req.body.email;
   const password = req.body.password;
@@ -250,7 +250,7 @@ app.post("/register", (req, res) => {
     email: email,
     password: hashedPassword
   };
-    req.session.user_id = id;
+    req.session.userId = id;
     res.redirect(`/urls/${id}`)
 });
 
