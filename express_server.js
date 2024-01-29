@@ -26,7 +26,7 @@ const urlDatabase = {
     userRandomID: {
       id: "userRandomID",
       email: "user@example.com",
-      password: "dishwasher-funk"
+      password: "123123"
     },
     user2RandomID: {
       id: "user2RandomID",
@@ -86,7 +86,7 @@ app.get("/urls/new", (req, res) => {
     res.redirect("/login");
   } else {
     const templateVars = {
-      user: users[req.session.user_id]
+      user: users[req.session.userId]
     };
   res.render("urls_new", templateVars);
 }});
@@ -94,6 +94,7 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   const shortURL = req.params.id;
   const url = urlDatabase[shortURL];
+  const userId = req.session.user_id;
   const user = users[userId];
 
   if (!user ) {
@@ -155,7 +156,7 @@ app.post("/urls", (req, res) => {
 
 // Add POST route for /urls/:id/delete to remove URLs
 app.post("/urls/:id/delete", (req, res) => {
-  const userId = req.session.user_id;
+  const userId = req.session.userId
   const shortURL = req.params.id;
   
   if (!shortURL) {
@@ -187,7 +188,7 @@ app.post("/urls/:id/delete", (req, res) => {
 app.post("/urls/:id/", (req, res) => {
   const shortURL = req.params.id;
   const user = users[userId];
-  const userId = req.session.user_id;
+  const userId = req.session.userId;
 
    if (!user) {
     res.send("Login Required");
@@ -227,7 +228,7 @@ app.post("/register", (req, res) => {
   // Check if the e-mail or password are empty strings, email is already in use
   const email = req.body.email;
   const password = req.body.password;
-  const hashed = bcrypt.hashSync(password, 10); 
+  const hashedPassword = bcrypt.hashSync(password, 10);
 
   if (!email) {
     res.status(400).send('Please enter required fields');
@@ -247,7 +248,7 @@ app.post("/register", (req, res) => {
     users[id] = {
     id: id,
     email: email,
-    password: hashed
+    password: hashedPassword
   };
     req.session.user_id = id;
     res.redirect(`/urls/${id}`)
