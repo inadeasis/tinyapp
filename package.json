@@ -12,7 +12,6 @@
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
-    "chai": "^5.0.0",
     "chai-http": "^4.4.0",
     "cookie-parser": "^1.4.6",
     "cookie-session": "^2.1.0",
@@ -21,6 +20,8 @@
     "node-fetch": "^2.6.1"
   },
   "devDependencies": {
+    "chai": "^5.0.3",
+    "mocha": "^10.2.0",
     "nodemon": "^3.0.3"
   }
 }
