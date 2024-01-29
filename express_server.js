@@ -1,41 +1,90 @@
 const express = require("express");
-const cookieParser = require('cookie-parser')
+const cookieSession = require("cookie-session");
 const bcrypt = require('bcryptjs');
 const app = express();
 const PORT = 8080; // default port 8080
 
-app.use(cookieParser())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
 app.set("view engine", "ejs")
 
+app.use(cookieSession({
+  name: 'session',
+  keys: ['key'],
+
+  maxAge: 24 * 60 * 60 * 1000 // Expiration: 24 hours
+}));
+
+// db links
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
 
+// users objects
+  const users = {
+    userRandomID: {
+      id: "userRandomID",
+      email: "user@example.com",
+      password: "dishwasher-funk"
+    },
+    user2RandomID: {
+      id: "user2RandomID",
+      email: "user2@example.com",
+      password: "dishwasher-funk",
+    },
+  };
+
+
+  const getUserByEmail = function(email, database) {
+  for (let user in database) {
+    if (database[user].email === email) {
+      return database[user];
+    }
+  }
+};
+
+
+function urlsForUser(id) {
+  let urls = {};
+  for (let url in urlDatabase) {
+    if (urlDatabase[url].userID === id) {
+      urls[url] = urlDatabase[url];
+    }
+  }
+  return urls;
+}
+
 app.get("/", (req, res) => {
-   res.redirect("/urls");
+  const userId = req.session.userId;
+    if (userId) {
+      res.redirect("/urls");
+    } else {
+    res.redirect("/login");
+  }
 });
 
 app.get("/urls", (req, res) => {
-  // const userId = req.session.user_id;
-  // let urls = {};
-  // let user = null;
-  // if (userId ) {
-  //   urls = {};
-  //   user = users[userId ];
+  const userId = req.session.userId;
+  const user = users[userId];
+
+  const templateVars = {
+    urls: urlsForUser,
+    user: user,
+  };
+  //   if (!user ) {
+  //   return res
+  //     .status(403)
+  //     .send(
+  //       "<html><head> <title>Error</title> </head><body> <h1>Error</h1> <p>Please login or register first.</p> </body></html>"
+  //     );
   // }
-  // const templateVars = {
-  //   urls,
-  //   user
-  // };
-  const templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
+
 });
 
 app.get("/urls/new", (req, res) => {
-  if (!req.session.user_id) {
+  if (!req.session.userId) {
     res.redirect("/login");
   } else {
     const templateVars = {
@@ -64,7 +113,7 @@ app.get("/hello", (req, res) => {
 
 app.get('/register', (req, res) => {
   const templateVars = {
-    user: users[req.session.user_id]
+    user: users[req.session.userId]
   };
   // res.cookie('user_id', user.id);
   res.render("register", templateVars);
@@ -73,7 +122,7 @@ app.get('/register', (req, res) => {
 app.get('/login', (req, res) => {
   
   const templateVars = {
-    user: users[req.session.user_id]
+    user: users[req.session.userId]
   };
   // res.cookie('user_id', user.id);
   res.render("login", templateVars);
@@ -89,7 +138,7 @@ app.post("/urls", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
   const userId = req.session.user_id;
   if (!userId) {
-    res.send("Please login first.");
+    res.send("Login Required");
     return;
   }
 
@@ -103,7 +152,6 @@ app.post("/urls/:id/delete", (req, res) => {
   const userId = req.session.user_id;
   const shortURL = req.params.id;
   
-
   console.log(req.body); 
   delete urlDatabase[shortURL];
   res.redirect(`/urls`)
@@ -111,11 +159,11 @@ app.post("/urls/:id/delete", (req, res) => {
 
 app.post("/urls/:id/", (req, res) => {
   const shortURL = req.params.id;
-  const longURL = req.params.longURL;
+  const longURL = req.body.longURL
   const userId = req.session.user_id;
 
    if (!userId) {
-    res.send("Please login first.");
+    res.send("Login Required");
     return;
   }
   if (urlDatabase[shortURL].userID !== userId) {
@@ -125,7 +173,6 @@ app.post("/urls/:id/", (req, res) => {
   urlDatabase[shortURL].longURL = req.body.longURL;
   res.redirect("/urls");
 });
-
 
 app.post("/login", (req, res) => {
   const email = req.body.email;
@@ -155,24 +202,21 @@ app.post("/register", (req, res) => {
   const password = req.body.password;
   const hashed = bcrypt.hashSync(password, 10); 
 
+  if (!email || !password) {
+    res.status(400).send('Please enter required fields');
+    return;
+  }
+  for (let id in users) {
+    if (users[id].email === email) {
+      res.status(400).send('Email already in use');
+      return;
+    }
+  }
     users[id] = {
     id: id,
     email: email,
     password: hashed
   };
-
-
-  if (!email || !password) {
-    res.status(400).send('Please enter required fields');
-    return;
-  }
-
-  for (let id in user) {
-    if (user[id].email === email) {
-      res.status(400).send('Email already in use');
-      return;
-    }
-  }
     req.session.user_id = id;
     res.redirect(`/urls/${id}`)
 });
@@ -181,16 +225,4 @@ app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
-// Users Object
-  const users = {
-    userRandomID: {
-      id: "userRandomID",
-      email: "user@example.com",
-      password: "dishwasher-funk"
-    },
-    user2RandomID: {
-      id: "user2RandomID",
-      email: "user2@example.com",
-      password: "dishwasher-funk",
-    },
-  };
+
