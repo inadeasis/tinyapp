@@ -17,21 +17,15 @@
         <a class="nav-item nav-link" href="/urls">My URLs</a>
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
-      <% if(!username){ %>
-      <form method="POST" action="/login">
-        <input
-          name="username"
-          type="text"
-          placeholder="username"
-          style="width: 150px; margin: 1px"
-        />
-        <button type="submit" class="btn btn-primary">Login</button>
-      </form>
-      <% } else{ %>
+
+      <% if (username) { %>
+      <span class="navbar-text"> Logged in as <%= user.email %> </span>
       <form method="POST" action="/logout">
-        <span>Welcome <%= users.email %></span>
-        <button type="submit" class="btn btn-primary">Logout</button>
+        <button type="submit">Logout</button>
       </form>
+      <% } else { %>
+      <a class="nav-item nav-link" href="/login">Login</a>
+      <a class="nav-item nav-link" href="/register">Register</a>
       <% } %>
     </div>
   </nav>
