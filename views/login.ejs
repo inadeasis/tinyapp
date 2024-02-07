@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <meta
-      name="viewport"
+    <meta charset="UTF-8" />
+    <meta 
+      name="viewport" 
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
 
@@ -14,41 +14,25 @@
       integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
       crossorigin="anonymous"
     />
-    <title>TinyApp</title>
+    <title>Login</title>
   </head>
+ 
   <body>
     <%- include('./partials/_header') %>
+    
     <main style="margin: 1em">
-      <h3>My URLs</h3>
-      <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">Short URL ID</th>
-            <th scope="col">Long URL</th>
-            <th scope="col">Edit</th>
-            <th scope="col">Delete</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% for (let shortURL in urls) { %>
-
-          <tr>
-            <td><%= shortURL %></td>
-            <td><%= urls[shortURL] %></td>
-            <td>
-              <form method="POST" action="/urls/<%= shortURL %>/edit"></form>
-                <a href="/urls/<%= shortURL %>">Edit</a>
-              </td><td>
-              <form method="POST" action="/urls/<%= shortURL %>/delete">
-                <button type="submit">Delete</button>
-                </td>
-              </form>
-            </td>
-          </tr>
-          <% } %>
-        </tbody>
-      </table>
-    </main>
+  
+    <h2>Login</h2>
+    <form action="/login" method="POST">
+      <label for="email">Email:</label>
+      <input type="email" name="email" placeholder="Email" required />
+      <label for="email">Password:</label>
+      <input type="password" name="password" placeholder="Password" required/>
+      
+      <div style="padding-top: 20px">
+        <button type="submit" class="btn btn-primary">Login</button>
+      </div>
+    </form>
     <!-- Bootstrap JS -->
     <script
       src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
