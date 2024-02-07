@@ -17,7 +17,7 @@
     <title>TinyApp</title>
   </head>
   <body>
-    <%- include('./partials/_header') %>
+    <%- include('partials/_header') %>
     <main style="margin: 1em">
       <h3>My URLs</h3>
       <table class="table">
@@ -30,18 +30,23 @@
           </tr>
         </thead>
         <tbody>
-          <% for (let shortURL in urls) { %>
+          <% for (const id in urls) { %>
 
           <tr>
-            <td><%= shortURL %></td>
-            <td><%= urls[shortURL] %></td>
+            <td><%= id %></td>
+            <td><%= urls[id].longURL %></td>
             <td>
-              <form method="POST" action="/urls/<%= shortURL %>/edit"></form>
-                <a href="/urls/<%= shortURL %>">Edit</a>
-              </td><td>
-              <form method="POST" action="/urls/<%= shortURL %>/delete">
-                <button type="submit">Delete</button>
-                </td>
+              <form method="GET" action="/urls/<%= id %>/edit">
+                <button type="submit" class="btn btn-outline-primary">
+                  Edit
+                </button>
+              </form>
+            </td>
+            <td>
+              <form method="POST" action="/urls/<%= id %>/delete">
+                <button type="submit" class="btn btn-outline-danger">
+                  Delete
+                </button>
               </form>
             </td>
           </tr>
